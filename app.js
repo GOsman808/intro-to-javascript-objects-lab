@@ -184,7 +184,7 @@ game.catchPokemon = function(pokemonObj) {
     this.party.push(pokemonObj);
     let pokeball = this.items.find(item => item.name === 'pokeball');
     if (pokeball) {
-      pokeball.quantity -= 1;
+      pokeball.quantity --;
     }
   };
   
@@ -233,7 +233,7 @@ Solve Exercise 13 here:
 
 game.gymStatus = function() {
    const gymTally = { completed: 0, incomplete: 0 };
-   this.gym.forEach(gym => {
+   game.gym.forEach(gym => {
    if (gym.completed){
     gymTally.completed += 1;
    }
@@ -300,3 +300,160 @@ Solve Exercise 17 here:
 
 game.party.sort((a, b) => b.hp - a.hp);
 console.log("Party sorted by HP:", game.party);
+
+/*
+Exercise 18
+Add a new property to the `game` object called `collection` and initialize its value to an empty array.
+
+Copy the `catchPokemon` method you wrote in Exercise Twelve and paste it below. Modify it so that:
+  - Ensure that no more than six Pokemon can be in the party at any time. 
+    Excess Pokemon should be placed in the `game.collection` array.
+  - It's up to you how to distribute Pokemon in a situation where more than six 
+    would be placed into the `game.party` array.
+
+Again, for this exercise, it's okay to have a negative number of pokeballs.
+
+After updating the method, use it by calling it and passing in a pokemon object of your choice from the `pokemon` data to catch it.
+
+Also, log the `game.items` array to confirm that the pokeball quantity is being decremented.
+
+Solve Exercise 18 here:
+*/
+
+game.collection =[];
+
+game.catchPokemon = function(pokemonObj) {
+    let pokeball = game.items.find(item => item.name === 'pokeball');
+    if (pokeball) {
+        pokeball.quantity --;
+    }
+    if (game.party.length < 6){
+        game.party.push(pokemonObj);
+        console.log(`${pokemonObj.name} added to party.`);
+    }
+    else {
+        game.collection.push(pokemonObj);
+        console.log(`${pokemonObj.name} added to collection.`); 
+    }
+}
+const pokemonToCatch = pokemon.find(pokemon => pokemon.name === "Snorlax");
+game.catchPokemon(pokemonToCatch);
+
+console.log("Updated party:", game.party);
+console.log("Collection:", game.collection);
+console.log("Items:", game.items);
+
+/*
+Exercise 19
+Copy the `catchPokemon` method that you just wrote above, and paste it below. The time has come to make it so that we cannot catch a Pokemon when we do not have any pokeballs to catch it with. 
+
+Modify the method so that if there are no pokeballs a message will be displayed that there are not enough pokeballs to catch the desired Pokemon.
+
+Also, ensure that the Pokemon isn't added to the `game.party` or the `game.collection`.
+
+Solve Exercise 19 here:
+*/
+
+game.catchPokemon = function(pokemonObj) {
+    const pokeball = game.items.find(item => item.name === "pokeball");
+    if (!pokeball || pokeball.quantity <= 0) {
+      console.log(`Not enough pokeballs to catch ${pokemonObj.name}!`);
+      return;
+    }
+    pokeball.quantity--;
+  
+    if (game.party.length < 6) {
+      game.party.push(pokemonObj);
+      console.log(`${pokemonObj.name} added to party.`);
+    } else {
+      game.collection.push(pokemonObj);
+      console.log(`${pokemonObj.name} added to collection.`);
+    }
+  };
+
+// game.items.find(item => item.name === "pokeball").quantity = 0;
+
+game.catchPokemon(pokemon.find(pokemon => pokemon.name === 'Hitmonlee'));
+
+/*
+Exercise 20
+Copy the `catchPokemon` method that you just wrote above, and paste it below. Modify is so that you can just pass in the name of a Pokemon instead of an entire object, and the method will look up the Pokemon from the data set for you.
+
+The string passed in should be allowed to be any case (for example, if the string 'PiKacHU' is passed to the function, it should match to 'Pikachu' in the data set). 
+
+If there is not a match, then return a string noting that the selected Pokemon does not exist. Ensure you do not decrement the pokeball count if an invalid Pokemon name is passed in, and also ensure that the Pokemon isn't added to the `game.party` or the `game.collection`.
+
+Solve Exercise 20 here:
+*/
+
+game.catchPokemon = function(pokemonName) {
+    const pokeball = game.items.find(item => item.name === "pokeball");
+    if (!pokeball || pokeball.quantity <= 0) {
+      console.log("Not enough pokeballs to catch any Pokémon!");
+      return;
+    }
+    const foundPokemon = pokemon.find(
+      p => p.name.toLowerCase() === pokemonName.toLowerCase()
+    );
+    if (!foundPokemon) {
+      console.log(`The Pokémon "${pokemonName}" does not exist!`);
+      return;
+    }
+    pokeball.quantity--;
+  
+    if (this.party.length < 6) {
+      this.party.push(foundPokemon);
+      console.log(`${foundPokemon.name} added to party.`);
+    } else {
+      this.collection.push(foundPokemon);
+      console.log(`${foundPokemon.name} added to collection.`);
+    }
+  };
+
+game.catchPokemon('MeWtWo');  
+game.catchPokemon('eeVee');
+game.catchPokemon('ggibberrishh'); 
+
+console.log("Updated party:", game.party);
+console.log("Collection:", game.collection);
+console.log("Items:", game.items);
+
+/*
+Exercise 21
+Dynamically construct an object with the existing `pokemon` data sorted by the different pokemon types. The object will have this structure:
+
+{
+  grass: [
+    { number: 1, name: 'Bulbasaur', type: 'grass', hp: 45, starter: true },
+    { number: 2, name: 'Ivysaur', type: 'grass', hp: 60, starter: false },
+    { number: 3, name: 'Venusaur', type: 'grass', hp: 80, starter: false },
+    * more grass type Pokemon objects...
+  ],
+  fire: [
+    { number: 4, name: 'Charmander', type: 'fire', hp: 39, starter: true },
+    * more fire type Pokemon objects...
+  ],
+  water: [
+    * water type Pokemon objects...
+  ],
+  * etc... until there is an array for every Pokemon type!
+}
+
+Log the object when it's constructed.
+
+Solve Exercise 21 here:
+*/
+
+const pokemonByType = {};
+
+pokemon.forEach(pokemon => {
+  const type = pokemon.type;
+
+  if (!pokemonByType[type]) {
+    pokemonByType[type] = [];
+  }
+
+  pokemonByType[type].push(pokemon);
+});
+
+console.log(pokemonByType);
